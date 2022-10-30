@@ -1,37 +1,30 @@
 import React from 'react';
+import { useEffect } from 'react';
 
 import css from '../Modal/Modal.module.css';
 
-export class Modal extends React.Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+export default function Modal({ image, closeModal }) {
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.code === `Escape`) {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [closeModal]);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = event => {
-    if (event.code === `Escape`) {
-      this.props.closeModal();
-    }
-  };
-
-  handleBackdropClick = event => {
+  const handleBackdropClick = event => {
     if (event.target.nodeName === 'DIV') {
-      this.props.closeModal();
+      closeModal();
     }
   };
 
-  render() {
-    return (
-      <div className={css.modal_backdrop} onClick={this.handleBackdropClick}>
-        <img
-          src={this.props.image}
-          className={css.modal_image}
-          alt="searching element"
-        />
-      </div>
-    );
-  }
+  return (
+    <div className={css.modal_backdrop} onClick={handleBackdropClick}>
+      <img src={image} className={css.modal_image} alt="searching element" />
+    </div>
+  );
 }
